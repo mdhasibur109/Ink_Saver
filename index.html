@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ChalanPrint – Smart Ink Saver</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head><body>
+<header><div class="logo"><b>Chalan</b>Print <span>Smart Ink Saver</span> Created with ♥ by <a href="https://www.facebook.com/md.hasibur.00/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:8px;background:#90F4E3;color:#1d6fe0;text-decoration:none;font-family:Arial,sans-serif;font-size:15px;font-weight:600;box-shadow:0 3px 8px rgba(24,119,242,.2);"><span style="display:flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:50%;background:#fff;color:#1877F2;font-size:15px;font-weight:bold;">f</span>Hasib</a><span></span></div>
+<div class="badge">🔒 100% local – files never leave your browser</div></header>
+<main>
+<aside>
+ <section><div id="drop" tabindex="0"><div class="big">⬆</div><b>Drop challans here</b><p>or click to browse · JPG, PNG, PDF (multi-page)</p>
+ <input id="file" type="file" multiple accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" hidden></div>
+ <ul id="files"></ul></section>
+ <section><h3>Processing mode</h3>
+ <div class="seg" id="modes">
+  <button data-m="ink">Ink Saver</button><button data-m="gray">Grayscale</button>
+  <button data-m="bw">Sharp B&amp;W</button><button data-m="auto" class="on">Smart Auto</button></div>
+ <div id="autoinfo" class="hint"></div>
+ <label>Brightness <output id="o_bright">0</output><input type="range" id="bright" min="-50" max="50" value="0"></label>
+ <label>Contrast <output id="o_contrast">10</output><input type="range" id="contrast" min="-50" max="50" value="10"></label>
+ <label>Threshold (B&amp;W darkness) <output id="o_thr">50</output><input type="range" id="thr" min="0" max="100" value="50"></label>
+ <label>Background whitening <output id="o_white">60</output><input type="range" id="white" min="0" max="100" value="60"></label>
+ <label class="chk"><input type="checkbox" id="keep" checked> Preserve colored logos &amp; stamps</label>
+ <label class="chk"><input type="checkbox" id="denoise"> Noise reduction</label>
+ <div class="row"><button id="undo">↶ Undo</button><button id="reset">Reset</button><button id="reproc">Reprocess</button></div>
+ </section>
+ <section><h3>Export &amp; print</h3>
+ <div class="row"><select id="fmt"><option value="png">PNG</option><option value="jpg">JPEG</option></select>
+ <select id="orient"><option value="portrait">A4 Portrait</option><option value="landscape">A4 Landscape</option></select></div>
+ <div class="row"><button id="dlimg">Image (page)</button><button id="dlall">All images</button></div>
+ <div class="row"><button class="pri" id="dlpdf">Download A4 PDF</button><button class="pri" id="prev">Print preview</button></div>
+ <div class="row"><button class="pri" id="printnow" title="Print only the final processed pages">Print now</button><button id="clear" title="Remove all documents from memory">Clear all</button></div>
+ </section>
+</aside>
+<div id="work">
+ <div class="bar2">
+  <button id="pp" title="Previous page">◀</button><span id="pgl">No pages</span><button id="pn" title="Next page">▶</button>
+  <span class="sp"></span>
+  <button id="zo">−</button><span id="zl">100%</span><button id="zi">+</button><button id="fit">Fit page</button>
+  <div class="menu"><button id="cropbtn" title="Crop and straighten the current page">✂ Crop tools ▾</button><div id="cropmenu" hidden>
+<button data-t="rect" title="Draw a rectangle and trim the page">▭ Rectangular Crop</button>
+<button data-t="persp" title="Straighten a photographed, tilted document">⬚ Perspective Crop</button>
+<button id="cropoff" title="Go back to the full uncropped page">↺ Restore uncropped</button></div></div><button id="rl" title="Rotate left">⟲</button><button id="rr" title="Rotate right">⟳</button>
+  <button id="vw">Side by side</button>
+ </div>
+ <div id="stage"><div id="empty">Upload a document to begin. Originals are never modified.</div>
+  <div id="frame" hidden><div class="lab l">Original</div><div class="lab r">Processed</div>
+  <canvas id="cP"></canvas><canvas id="cO"></canvas><div id="hdl"><i>↔</i></div></div></div>
+ <div id="stat"></div>
+</div>
+</main>
+<div id="cropm" hidden><div class="ct"><b id="ctitle"></b>
+<select id="cratio" class="ronly" title="Aspect ratio"><option value="0">Free</option><option value="o">Original</option><option value="1">1:1</option><option value="1.3333">4:3</option><option value="1.5">3:2</option><option value="1.7778">16:9</option><option value="0.7071">A4 portrait</option><option value="1.4142">A4 landscape</option></select>
+<span class="ronly nums"><label>X<input type="number" id="cx"></label><label>Y<input type="number" id="cy"></label><label>W<input type="number" id="cw"></label><label>H<input type="number" id="ch"></label></span>
+<button id="cauto" class="ponly" title="Try to detect the document edges automatically">Auto-detect</button><span class="sp"></span>
+<button id="cpan" title="Pan the image (or hold Space / middle mouse)">✋ Pan</button><button id="czo" title="Zoom out">−</button><button id="czi" title="Zoom in">+</button><button id="cfit" title="Fit image">Fit</button>
+<button id="creset" title="Reset selection">Reset</button><button id="ccancel" title="Esc">Cancel</button><button class="pri" id="capply" title="Enter">Apply</button></div>
+<div id="cwrap"><canvas id="ccv"></canvas></div><div id="cinfo"></div></div>
+<div id="busy" hidden><div><div class="spin"></div><p id="busyt">Processing…</p></div></div>
+<div id="modal" hidden><div class="mbox"><div class="mh"><b>Print preview (A4)</b><span><button class="pri" id="doprint">Print</button> <button id="closem">Close</button></span></div><div id="sheets"></div></div></div>
+<div id="printArea"></div><div id="toast"></div>
+<script src="js/processor.js"></script><script src="js/app.js"></script><script src="js/crop.js"></script>
+
+
+</body></html>
